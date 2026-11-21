@@ -1,5 +1,13 @@
+
+import tkinter as tk
+
+from presentation.main_window import MainWindow
+
+
 def main():
-    print("Морской бой: проект запущен!")
+    root = tk.Tk()
+    MainWindow(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":
