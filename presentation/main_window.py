@@ -2,10 +2,12 @@
 import tkinter as tk
 
 from infrastructure.settings_manager import SettingsManager
+from application.game_service import GameService
 from presentation.settings_frame import SettingsFrame
 from presentation.rules_frame import RulesFrame
-from application.game_service import GameService
 from presentation.game_frame import GameFrame
+from presentation.placement_frame import PlacementFrame
+
 
 class MainWindow:
     """Главное окно приложения Морской бой."""
@@ -13,6 +15,7 @@ class MainWindow:
     def __init__(self, root):
         self.root = root
         self.settings_manager = SettingsManager()
+        self.game_service = None
 
         settings = self.settings_manager.load_settings()
 
@@ -26,8 +29,6 @@ class MainWindow:
         self.create_menu()
 
     def create_menu(self):
-        """Создаёт главное меню приложения."""
-
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -49,49 +50,64 @@ class MainWindow:
         )
         subtitle.pack(pady=10)
 
-        new_game_button = tk.Button(
+        tk.Button(
             self.root,
             text="Новая игра",
             font=("Segoe UI", 13),
             width=20,
             height=2,
             command=self.start_game
-        )
-        new_game_button.pack(pady=12)
+        ).pack(pady=12)
 
-        settings_button = tk.Button(
+        tk.Button(
             self.root,
             text="Настройки",
             font=("Segoe UI", 13),
             width=20,
             height=2,
             command=self.open_settings
-        )
-        settings_button.pack(pady=12)
+        ).pack(pady=12)
 
-        rules_button = tk.Button(
+        tk.Button(
             self.root,
             text="Правила игры",
             font=("Segoe UI", 13),
             width=20,
             height=2,
             command=self.open_rules
-        )
-        rules_button.pack(pady=12)
+        ).pack(pady=12)
 
-        exit_button = tk.Button(
+        tk.Button(
             self.root,
             text="Выход",
             font=("Segoe UI", 13),
             width=20,
             height=2,
             command=self.root.destroy
+        ).pack(pady=12)
+
+    def start_game(self):
+        self.game_service = GameService()
+        self.game_service.start_new_game()
+
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        PlacementFrame(
+            self.root,
+            self.game_service,
+            self.open_game,
+            self.show_main_menu
         )
-        exit_button.pack(pady=12)
+
+    def open_game(self):
+        GameFrame(
+            self.root,
+            self.game_service,
+            self.show_main_menu
+        )
 
     def open_settings(self):
-        """Открывает экран настроек."""
-
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -101,26 +117,14 @@ class MainWindow:
             self.show_main_menu
         )
 
-    def show_main_menu(self):
-        """Возвращает пользователя в главное меню."""
-
-        self.create_menu()
-
     def open_rules(self):
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        RulesFrame(self.root, self.show_main_menu)
-
-    def start_game(self):
-        self.game_service = GameService()
-        self.game_service.start_new_game()
-
-        for widget in self.root.winfo_children():
-            widget.destroy()
-
-        GameFrame(
+        RulesFrame(
             self.root,
-            self.game_service,
             self.show_main_menu
         )
+
+    def show_main_menu(self):
+        self.create_menu()

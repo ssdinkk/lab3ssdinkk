@@ -13,16 +13,19 @@ class GameService:
     def __init__(self):
         self.game = None
 
+
     def start_new_game(self):
-        """Создаёт новую игру и участников."""
+        """Создаёт новую игру с пустым полем игрока."""
 
         player = Player("Игрок", Board())
         computer = Player("Компьютер", Board())
 
-        self._place_ships(player.board)
+        # Компьютер получает случайно расставленные корабли.
         self._place_ships(computer.board)
 
+        # Поле игрока остаётся пустым для ручной расстановки.
         self.game = Game(player, computer)
+
 
     def _place_ships(self, board: Board):
         """Автоматически размещает флот на поле."""
